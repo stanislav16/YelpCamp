@@ -5,10 +5,15 @@ const morgan = require("morgan");
 const ejsMate = require("ejs-mate");
 const methodOverride = require("method-override");
 const ExpressError = require("./utils/ExpressError");
-const campgrounds = require("./routes/campgrounds");
-const reviews = require("./routes/reviews");
 const session = require("express-session");
 const flash = require("connect-flash");
+const passport = require("passport");
+const localStrategy = require("passport-local");
+const User = require("./models/user");
+
+const userRoutes = require("./routes/users");
+const campgroundRoutes = require("./routes/campgrounds");
+const reviewRoutes = require("./routes/reviews");
 
 mongoose
   .connect("mongodb://127.0.0.1:27017/yelpCamp")
@@ -18,11 +23,6 @@ mongoose
   .catch((err) => console.log(err));
 const path = require("path");
 
-app.use(express.urlencoded({ extended: true }));
-app.use(morgan("tiny"));
-app.use(methodOverride("_method"));
-app.use(express.static(path.join(__dirname, "public")));
-app.use(flash());
 const sessionConfig = {
   secret: "secret",
   resave: false,
@@ -33,7 +33,18 @@ const sessionConfig = {
     maxAge: 1000 * 60 * 60 * 24 * 7,
   },
 };
+app.use(express.urlencoded({ extended: true }));
+app.use(morgan("tiny"));
+app.use(methodOverride("_method"));
+app.use(express.static(path.join(__dirname, "public")));
+app.use(flash());
 app.use(session(sessionConfig));
+app.use(passport.initialize());
+app.use(passport.session());
+passport.use(new localStrategy(User.authenticate()));
+
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
 
 app.engine("ejs", ejsMate);
 app.set("view engine", "ejs");
@@ -45,8 +56,9 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use("/campgrounds", campgrounds);
-app.use("/campgrounds/:id/reviews", reviews);
+app.use("/", userRoutes);
+app.use("/campgrounds", campgroundRoutes);
+app.use("/campgrounds/:id/reviews", reviewRoutes);
 
 app.all("*", (req, res, next) => {
   next(new ExpressError("Page not found", 404));

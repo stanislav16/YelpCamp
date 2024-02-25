@@ -9,8 +9,12 @@
       </div>
       <ul class="list-group list-group-flush">
         <li class="list-group-item text-muted"><%= camp.location %></li>
+        <li class="list-group-item">
+          Submitted by <%= camp.author.username %>
+        </li>
         <li class="list-group-item">$<%= camp.price %>/night</li>
       </ul>
+      <% if(currentUser && camp.author.equals(currentUser)){ %>
       <div class="card-body">
         <a
           href="/campgrounds/<%=camp._id  %>/edit"
@@ -25,6 +29,7 @@
           <button class="card-link btn btn-dark">Delete</button>
         </form>
       </div>
+      <%} %>
     </div>
   </div>
   <div class="col-6">

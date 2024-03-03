@@ -23,7 +23,12 @@ async function seedDB() {
       author: "65d86e56ec95e6067a4b9b09",
       location: `${cities[random1000].city}, ${cities[random1000].state}`,
       title: `${sample(descriptors)} ${sample(places)}`,
-      image: "https://source.unsplash.com/collection/483251",
+      images: [
+        {
+          url: "https://source.unsplash.com/collection/483251",
+          filename: "YelpCamp/efzvzq2z7wzq2z",
+        },
+      ],
       description:
         "Lorem ipsum dolor sit amet consectetur adipisicing elit. Quae, illum quis iste nihil dolorem accusantium, neque nisi omnis aut veniam numquam illo reprehenderit adipisci non. Laborum explicabo numquam fuga nesciunt?",
       price: price,

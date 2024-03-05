@@ -1,0 +1,11 @@
+#clusterMap {
+  height: 500px;
+  width: 100%;
+  border-radius: 6px;
+}
+
+#map {
+  height: 300px;
+  width: 100%;
+  border-radius: 6px;
+}

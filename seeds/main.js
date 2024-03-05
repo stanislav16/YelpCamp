@@ -23,6 +23,13 @@ async function seedDB() {
       author: "65d86e56ec95e6067a4b9b09",
       location: `${cities[random1000].city}, ${cities[random1000].state}`,
       title: `${sample(descriptors)} ${sample(places)}`,
+      geometry: {
+        type: "Point",
+        coordinates: [
+          cities[random1000].longitude,
+          cities[random1000].latitude,
+        ],
+      },
       images: [
         {
           url: "https://source.unsplash.com/collection/483251",

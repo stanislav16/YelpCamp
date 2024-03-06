@@ -47,28 +47,54 @@ app.use(session(sessionConfig));
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(mongoSanitize());
-// app.use(
-//   helmet({
-//     contentSecurityPolicy: {
-//       directives: {
-//         defaultSrc: ["'self'"],
-//         scriptSrc: [
-//           "'self'",
-//           "https://api.mapbox.com",
-//           "https://cdn.jsdelivr.net",
-//         ],
-//         styleSrc: [
-//           "'self'",
-//           "https://api.mapbox.com",
-//           "https://cdn.jsdelivr.net",
-//           "'unsafe-inline'",
-//         ],
-//         imgSrc: ["'self'", "https://source.unsplash.com"],
-//       },
-//     },
-//   })
-// );
 passport.use(new localStrategy(User.authenticate()));
+
+const scriptSrcUrls = [
+  "https://stackpath.bootstrapcdn.com/",
+  "https://api.tiles.mapbox.com/",
+  "https://api.mapbox.com/",
+  "https://kit.fontawesome.com/",
+  "https://cdnjs.cloudflare.com/",
+  "https://cdn.jsdelivr.net",
+];
+const styleSrcUrls = [
+  "https://kit-free.fontawesome.com/",
+  "https://stackpath.bootstrapcdn.com/",
+  "https://api.mapbox.com/",
+  "https://api.tiles.mapbox.com/",
+  "https://fonts.googleapis.com/",
+  "https://use.fontawesome.com/",
+  "https://cdn.jsdelivr.net",
+];
+const connectSrcUrls = [
+  "https://api.mapbox.com/",
+  "https://a.tiles.mapbox.com/",
+  "https://b.tiles.mapbox.com/",
+  "https://events.mapbox.com/",
+];
+const imgSrcUrls = [
+  "'self'",
+  "blob:",
+  "data:",
+  "https://res.cloudinary.com/ds8ec12ql/",
+  "https://images.unsplash.com/",
+  "https://source.unsplash.com/",
+];
+const fontSrcUrls = [];
+app.use(
+  helmet.contentSecurityPolicy({
+    directives: {
+      defaultSrc: [],
+      connectSrc: ["'self'", ...connectSrcUrls],
+      scriptSrc: ["'unsafe-inline'", "'self'", ...scriptSrcUrls],
+      styleSrc: ["'self'", "'unsafe-inline'", ...styleSrcUrls],
+      workerSrc: ["'self'", "blob:"],
+      objectSrc: [],
+      imgSrc: [...imgSrcUrls],
+      fontSrc: ["'self'", ...fontSrcUrls],
+    },
+  })
+);
 
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());

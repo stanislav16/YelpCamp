@@ -14,10 +14,11 @@ const flash = require("connect-flash");
 const passport = require("passport");
 const localStrategy = require("passport-local");
 const User = require("./models/user");
-
 const userRoutes = require("./routes/users");
 const campgroundRoutes = require("./routes/campgrounds");
 const reviewRoutes = require("./routes/reviews");
+const mongoSanitize = require("express-mongo-sanitize");
+const helmet = require("helmet");
 
 mongoose
   .connect("mongodb://127.0.0.1:27017/yelpCamp")
@@ -28,6 +29,7 @@ mongoose
 const path = require("path");
 
 const sessionConfig = {
+  name: "session",
   secret: "secret",
   resave: false,
   saveUninitialized: true,
@@ -38,13 +40,34 @@ const sessionConfig = {
   },
 };
 app.use(express.urlencoded({ extended: true }));
-// app.use(morgan("tiny"));
 app.use(methodOverride("_method"));
 app.use(express.static(path.join(__dirname, "public")));
 app.use(flash());
 app.use(session(sessionConfig));
 app.use(passport.initialize());
 app.use(passport.session());
+app.use(mongoSanitize());
+// app.use(
+//   helmet({
+//     contentSecurityPolicy: {
+//       directives: {
+//         defaultSrc: ["'self'"],
+//         scriptSrc: [
+//           "'self'",
+//           "https://api.mapbox.com",
+//           "https://cdn.jsdelivr.net",
+//         ],
+//         styleSrc: [
+//           "'self'",
+//           "https://api.mapbox.com",
+//           "https://cdn.jsdelivr.net",
+//           "'unsafe-inline'",
+//         ],
+//         imgSrc: ["'self'", "https://source.unsplash.com"],
+//       },
+//     },
+//   })
+// );
 passport.use(new localStrategy(User.authenticate()));
 
 passport.serializeUser(User.serializeUser());

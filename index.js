@@ -19,16 +19,31 @@ const campgroundRoutes = require("./routes/campgrounds");
 const reviewRoutes = require("./routes/reviews");
 const mongoSanitize = require("express-mongo-sanitize");
 const helmet = require("helmet");
+const dbUrl = process.env.DB_URL;
+const MongoStore = require("connect-mongo");
+
+// mongodb:localhost:27017/yelp-camp
 
 mongoose
-  .connect("mongodb://127.0.0.1:27017/yelpCamp")
+  .connect(dbUrl)
   .then(() => {
     console.log("Connected to mongodb");
   })
   .catch((err) => console.log(err));
 const path = require("path");
 
+const store = new MongoStore({
+  mongoUrl: dbUrl,
+  secret: "secret",
+  touchAfter: 24 * 60 * 60,
+});
+
+store.on("error", function (e) {
+  console.log("Session Store Error", e);
+});
+
 const sessionConfig = {
+  store,
   name: "session",
   secret: "secret",
   resave: false,

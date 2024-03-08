@@ -22,8 +22,6 @@ const helmet = require("helmet");
 const dbUrl = process.env.DB_URL;
 const MongoStore = require("connect-mongo");
 
-// mongodb:localhost:27017/yelp-camp
-
 mongoose
   .connect(dbUrl)
   .then(() => {
@@ -34,7 +32,7 @@ const path = require("path");
 
 const store = new MongoStore({
   mongoUrl: dbUrl,
-  secret: "secret",
+  secret: process.env.SECRET,
   touchAfter: 24 * 60 * 60,
 });
 
@@ -45,7 +43,7 @@ store.on("error", function (e) {
 const sessionConfig = {
   store,
   name: "session",
-  secret: "secret",
+  secret: proces.env.SECRET,
   resave: false,
   saveUninitialized: true,
   cookie: {

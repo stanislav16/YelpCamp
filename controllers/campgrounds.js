@@ -63,6 +63,15 @@ async function updateCampground(req, res) {
     filename: file.filename,
   }));
   camp.images.push(...imgs);
+
+  if (req.body.campground.location !== camp.location) {
+    const geoData = await geocoder
+      .forwardGeocode({ query: req.body.campground.location, limit: 1 })
+      .send();
+    camp.geometry = geoData.body.features[0].geometry;
+    camp.location = req.body.campground.location;
+  }
+
   camp.set(req.body.campground);
   await camp.save();
 
